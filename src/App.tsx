@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Spline from '@splinetool/react-spline';
 import { LanguageProvider, useLanguage, Language } from './contexts/LanguageContext';
+import { GoogleGenerativeAI } from '@google/genai';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -829,6 +830,151 @@ function WatermarkCover() {
   );
 }
 
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
+
+function AIProposalGenerator() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [description, setDescription] = useState('');
+  const [proposal, setProposal] = useState('');
+  const { t, language } = useLanguage();
+
+  const generateProposal = async () => {
+    if (!description) return;
+    setLoading(true);
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const prompt = language === 'pt' 
+        ? `Você é o assistente comercial inteligente do "Kial Dev", um desenvolvedor criativo de elite. 
+           Um cliente descreveu o seguinte projeto: "${description}".
+           Crie uma proposta comercial persuasiva, profissional e moderna. 
+           A proposta deve incluir:
+           1. Uma análise breve da necessidade.
+           2. Soluções técnicas sugeridas (ex: React, Animações, Performance).
+           3. Por que escolher o Kial Dev (foco em inovação e teste grátis de 7 dias).
+           4. Uma estimativa amigável de que os valores serão discutidos no WhatsApp.
+           Responda em Português, use um tom elegante e use markdown para formatação.`
+        : `You are the AI Sales Assistant for "Kial Dev", an elite creative developer.
+           A client described this project: "${description}".
+           Create a persuasive, professional, and modern business proposal.
+           The proposal should include:
+           1. Brief analysis of the need.
+           2. Suggested technical solutions (e.g., React, Animations, Performance).
+           3. Why choose Kial Dev (focus on innovation and 7-day free trial).
+           4. A friendly mention that values will be discussed via WhatsApp.
+           Respond in English, use an elegant tone and use markdown for formatting.`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      setProposal(response.text());
+    } catch (error) {
+      console.error(error);
+      setProposal(language === 'pt' ? "Erro ao gerar proposta. Tente novamente." : "Error generating proposal. Please try again.");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <>
+      <div className="fixed bottom-8 right-8 z-[120]">
+        <Magnetic>
+          <button 
+            onClick={() => setIsOpen(true)}
+            className="bg-[#d4ff3f] text-black p-4 md:p-6 rounded-full shadow-2xl flex items-center gap-3 hover:scale-110 transition-transform group"
+          >
+            <span className="font-sans text-xs font-bold uppercase tracking-widest hidden md:block">
+              {language === 'pt' ? 'Proposta com IA' : 'AI Proposal'}
+            </span>
+            <ArrowUpRight className="w-6 h-6" />
+          </button>
+        </Magnetic>
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-8"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-[#0a0a0a] border border-white/10 w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col"
+            >
+              <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
+                <h2 className="font-display text-2xl font-medium tracking-tight">
+                  {language === 'pt' ? 'Gerador de Proposta Inteligente' : 'Smart Proposal Generator'}
+                </h2>
+                <button onClick={() => setIsOpen(false)} className="text-white/40 hover:text-white transition-colors uppercase text-xs tracking-widest font-bold">
+                  {language === 'pt' ? '[ Fechar ]' : '[ Close ]'}
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8">
+                {!proposal ? (
+                  <div className="space-y-6">
+                    <p className="text-white/60 text-lg font-light leading-relaxed">
+                      {language === 'pt' 
+                        ? 'Descreva brevemente o seu projeto ou ideia. Nossa IA analisará suas necessidades e criará uma proposta personalizada em segundos.'
+                        : 'Briefly describe your project or idea. Our AI will analyze your needs and create a custom proposal in seconds.'}
+                    </p>
+                    <textarea 
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder={language === 'pt' ? "Ex: Preciso de um site moderno para minha consultoria de advocacia..." : "Ex: I need a modern website for my law firm..."}
+                      className="w-full h-40 bg-white/5 border border-white/10 rounded-2xl p-6 text-white placeholder:text-white/20 focus:outline-none focus:border-[#d4ff3f]/50 transition-colors resize-none text-lg"
+                    />
+                    <button 
+                      onClick={generateProposal}
+                      disabled={loading || !description}
+                      className="w-full bg-[#d4ff3f] text-black py-5 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50 flex items-center justify-center gap-3"
+                    >
+                      {loading ? (
+                        <div className="w-6 h-6 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          {language === 'pt' ? 'Gerar Proposta Agora' : 'Generate Proposal Now'}
+                          <ArrowUpRight className="w-5 h-5" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-8">
+                    <div className="prose prose-invert max-w-none">
+                      <div className="whitespace-pre-wrap font-sans text-lg leading-relaxed text-white/80">
+                        {proposal}
+                      </div>
+                    </div>
+                    <div className="flex flex-col md:flex-row gap-4 pt-8 border-t border-white/10">
+                      <a 
+                        href={`https://wa.me/244947109187?text=${encodeURIComponent(language === 'pt' ? "Olá Kial! Acabei de gerar uma proposta com sua IA." : "Hi Kial! I just generated a proposal with your AI.")}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex-1 bg-[#d4ff3f] text-black py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-center hover:bg-white transition-colors"
+                      >
+                        {language === 'pt' ? 'Falar no WhatsApp' : 'Talk on WhatsApp'}
+                      </a>
+                      <button 
+                        onClick={() => setProposal('')}
+                        className="flex-1 border border-white/10 py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-center hover:bg-white/10 transition-colors"
+                      >
+                        {language === 'pt' ? 'Nova Proposta' : 'New Proposal'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [cursor, setCursor] = useState<CursorState>({ active: false, text: '' });
@@ -871,6 +1017,7 @@ export default function App() {
           <SplineBackground />
           <WatermarkCover />
           <CustomCursor />
+          <AIProposalGenerator />
           {!isLoading && (
             <BrowserRouter>
               <ScrollToTop />
