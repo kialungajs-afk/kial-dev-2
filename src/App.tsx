@@ -830,19 +830,19 @@ function WatermarkCover() {
   );
 }
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
-
 function AIProposalGenerator() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState('');
   const [proposal, setProposal] = useState('');
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
 
   const generateProposal = async () => {
     if (!description) return;
     setLoading(true);
     try {
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+      const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       const prompt = language === 'pt' 
         ? `Você é o assistente comercial inteligente do "Kial Dev", um desenvolvedor criativo de elite. 
