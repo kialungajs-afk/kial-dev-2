@@ -853,6 +853,13 @@ function AIProposalGenerator() {
   const generateProposal = async () => {
     setLoading(true);
     try {
+      // Save data to server (Shell/Grelha)
+      await fetch('/api/proposals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      }).catch(err => console.error("Error saving to server:", err));
+
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -861,32 +868,30 @@ function AIProposalGenerator() {
         ? `Você é o assistente comercial sênior do "Kial Dev".
            DADOS DO CLIENTE:
            - Empresa: ${formData.companyName}
-           - Tamanho: ${formData.employees} funcionários
+           - Tamanho: ${formData.employees === '0' ? 'Individual' : formData.employees + ' funcionários'}
            - Serviço: ${formData.serviceType}
            - Descrição: ${formData.description}
-           - Contato: ${formData.email} / ${formData.whatsapp}
            
            TAREFA:
-           Crie uma proposta comercial estratégica.
+           Crie uma PROPOSTA comercial estratégica.
            REGRAS OBRIGATÓRIAS:
-           1. Proponha uma faixa de PREÇO estimada (em Kwanza ou Dólar, sendo competitivo mas premium).
-           2. Destaque OBRIGATORIAMENTE os "7 DIAS DE TESTE GRÁTIS" para validar o produto.
-           3. Use um tom profissional, técnico e persuasivo.
+           1. Proponha uma faixa de PREÇO estimada (em Kwanza ou Dólar).
+           2. Destaque OBRIGATORIAMENTE os "7 DIAS DE TESTE GRÁTIS".
+           3. Use um tom profissional e persuasivo.
            4. Formate com Markdown elegante.`
         : `You are the Senior Sales Assistant for "Kial Dev".
            CLIENT DATA:
            - Company: ${formData.companyName}
-           - Size: ${formData.employees} employees
+           - Size: ${formData.employees === '0' ? 'Individual' : formData.employees + ' employees'}
            - Service: ${formData.serviceType}
            - Description: ${formData.description}
-           - Contact: ${formData.email} / ${formData.whatsapp}
            
            TASK:
-           Create a strategic business proposal.
+           Create a strategic BUSINESS PROPOSAL.
            MANDATORY RULES:
-           1. Propose an estimated PRICE range (Competitive but premium).
-           2. MANDATORILY highlight the "7-DAY FREE TRIAL" to validate the product.
-           3. Use a professional, technical, and persuasive tone.
+           1. Propose an estimated PRICE range.
+           2. MANDATORILY highlight the "7-DAY FREE TRIAL".
+           3. Use a professional and persuasive tone.
            4. Format with elegant Markdown.`;
 
       const result = await model.generateContent(prompt);
@@ -928,7 +933,7 @@ function AIProposalGenerator() {
             className="bg-[#d4ff3f] text-black p-4 md:p-6 rounded-full shadow-2xl flex items-center gap-3 hover:scale-110 transition-transform group"
           >
             <span className="font-sans text-xs font-bold uppercase tracking-widest hidden md:block">
-              {language === 'pt' ? 'Solicitar Orçamento IA' : 'AI Quote Request'}
+              {language === 'pt' ? 'Solicitar Proposta IA' : 'AI Proposal Request'}
             </span>
             <ArrowUpRight className="w-6 h-6" />
           </button>
@@ -941,12 +946,12 @@ function AIProposalGenerator() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-8"
+            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-8 cursor-default"
           >
             <motion.div 
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              className="bg-[#0a0a0a] border border-white/10 w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col"
+              className="bg-[#0a0a0a] border border-white/10 w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col cursor-auto"
             >
               {/* Header */}
               <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
@@ -955,7 +960,7 @@ function AIProposalGenerator() {
                     {step}
                   </div>
                   <h2 className="font-display text-xl font-medium tracking-tight">
-                    {step === 1 && (language === 'pt' ? 'Dados do Projeto' : 'Project Data')}
+                    {step === 1 && (language === 'pt' ? 'Dados para Proposta' : 'Proposal Data')}
                     {step === 2 && (language === 'pt' ? 'Interação com IA' : 'AI Interaction')}
                     {step === 3 && (language === 'pt' ? 'Sua Proposta Exclusiva' : 'Your Exclusive Proposal')}
                   </h2>
@@ -974,8 +979,15 @@ function AIProposalGenerator() {
                       <input name="companyName" value={formData.companyName} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Funcionários' : 'Employees'}</label>
-                      <input name="employees" type="number" value={formData.employees} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none" />
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Tamanho da Equipe' : 'Team Size'}</label>
+                      <select name="employees" value={formData.employees} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none">
+                        <option value="">{language === 'pt' ? 'Selecione...' : 'Select...'}</option>
+                        <option value="0">{language === 'pt' ? 'Individual (1 pessoa)' : 'Individual (1 person)'}</option>
+                        <option value="5">1 - 5</option>
+                        <option value="10">5 - 10</option>
+                        <option value="50">10 - 50</option>
+                        <option value="100">+50</option>
+                      </select>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Email</label>
