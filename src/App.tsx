@@ -902,8 +902,20 @@ function AIProposalGenerator() {
   };
 
   const sendToEmail = () => {
-    const subject = encodeURIComponent(`Nova Proposta: ${formData.companyName}`);
-    const body = encodeURIComponent(`Dados do Cliente:\nEmpresa: ${formData.companyName}\nEmail: ${formData.email}\nWhatsApp: ${formData.whatsapp}\n\nProposta Gerada:\n\n${proposal}`);
+    const subject = encodeURIComponent(`Nova Proposta Comercial - ${formData.companyName}`);
+    const body = encodeURIComponent(
+      `Olá Kial,\n\n` +
+      `Gostaria de solicitar um orçamento com base na proposta gerada pela IA:\n\n` +
+      `--- DADOS DA EMPRESA ---\n` +
+      `Empresa: ${formData.companyName}\n` +
+      `Funcionários: ${formData.employees}\n` +
+      `WhatsApp: ${formData.whatsapp}\n` +
+      `Rede Social: ${formData.social}\n` +
+      `Serviço: ${formData.serviceType}\n\n` +
+      `--- PROPOSTA GERADA ---\n` +
+      `${proposal}\n\n` +
+      `--- FIM DA PROPOSTA ---`
+    );
     window.location.href = `mailto:kialungajs@gmail.com?subject=${subject}&body=${body}`;
   };
 
