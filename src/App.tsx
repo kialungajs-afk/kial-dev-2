@@ -7,7 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Spline from '@splinetool/react-spline';
 import { LanguageProvider, useLanguage, Language } from './contexts/LanguageContext';
-import { GoogleGenerativeAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -841,7 +841,8 @@ function AIProposalGenerator() {
     if (!description) return;
     setLoading(true);
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.VITE_GEMINI_API_KEY : "");
+      if (!apiKey) throw new Error("API Key Missing");
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       const prompt = language === 'pt' 
