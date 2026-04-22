@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from 'motion/react';
-import { ArrowUpRight, Menu, MessageCircle, Mail, Send } from 'lucide-react';
+import { ArrowUpRight, Menu, MessageCircle, Mail, Send, Globe } from 'lucide-react';
 import React, { useEffect, useState, useRef, createContext, useContext, ReactNode } from 'react';
 import Lenis from 'lenis';
 import { clsx, type ClassValue } from 'clsx';
@@ -847,6 +847,7 @@ function ProposalGenerator() {
     employees: '',
     email: '',
     whatsapp: '',
+    prefix: '+244',
     social: '',
     serviceType: '',
     description: ''
@@ -860,26 +861,26 @@ function ProposalGenerator() {
   const getPlans = () => {
     const s = formData.serviceType;
     if (s === 'Website') return [
-      { name: 'Básico', price: '$150', features: ['3 Páginas', 'SEO Base', 'Suporte'] },
-      { name: 'Ótimo', price: '$450', features: ['10 Páginas', 'Design Custom', 'Blog'] },
-      { name: 'Premium', price: '$900', features: ['Ilimitado', 'E-commerce', 'Experiência 7 Dias Grátis'], promo: true }
+      { name: 'Básico', price: '$150', time: '1 Mês', features: ['5 Páginas (Inc. +2)', 'SEO Base', 'Suporte', 'Cartão / PayPal'] },
+      { name: 'Ótimo', price: '$450', time: '3 Meses + 1 GRÁTIS', features: ['10 Páginas', 'Design Custom', 'Blog', 'Cartão / PayPal'], promo: true, promoText: '4 Meses Total' },
+      { name: 'Premium', price: '$900', time: 'Anual', features: ['Ilimitado', 'E-commerce', 'Gestão Total', 'Cartão / PayPal'], trial: true }
     ];
     if (s === 'Landing Page') return [
-      { name: 'Básico', price: '$100', features: ['Sessão Única', 'Mobile Ready'] },
-      { name: 'Ótimo', price: '$250', features: ['Copywriting', 'Animações High'] },
-      { name: 'Premium', price: '$500', features: ['A/B Testing', 'Experiência 7 Dias Grátis'], promo: true }
+      { name: 'Básico', price: '$100', time: '1 Mês', features: ['5 Páginas (Inc. +2)', 'Mobile Ready', 'Cartão / PayPal'] },
+      { name: 'Ótimo', price: '$300', time: '3 Meses + 1 GRÁTIS', features: ['Copywriting', 'Animações High', 'Cartão / PayPal'], promo: true, promoText: '4 Meses Total' },
+      { name: 'Premium', price: '$600', time: 'Anual', features: ['A/B Testing', 'Gestão Ads', 'Cartão / PayPal'], trial: true }
     ];
     return [
-      { name: 'Básico', price: '$120', features: ['Consultoria'] },
-      { name: 'Ótimo', price: '$300', features: ['Manutenção'] },
-      { name: 'Premium', price: '$600', features: ['Full Service', 'Experiência 7 Dias Grátis'], promo: true }
+      { name: 'Básico', price: '$120', time: '1 Mês', features: ['Consultoria', 'Suporte', 'Cartão / PayPal'] },
+      { name: 'Ótimo', price: '$360', time: '3 Meses + 1 GRÁTIS', features: ['Manutenção', 'Otimização', 'Cartão / PayPal'], promo: true, promoText: '4 Meses Total' },
+      { name: 'Premium', price: '$720', time: 'Anual', features: ['Full Service', 'Prioridade', 'Cartão / PayPal'], trial: true }
     ];
   };
 
   const sendToEmail = (plan: string) => {
-    const subject = encodeURIComponent(`Nova Solicitação: ${plan} - ${formData.companyName}`);
+    const subject = encodeURIComponent(`Nova Proposta: ${plan} - ${formData.companyName}`);
     const body = encodeURIComponent(
-      `Olá Kial,\n\nTenho interesse no plano ${plan}.\n\n--- DADOS ---\nEmpresa: ${formData.companyName}\nWhatsApp: ${formData.whatsapp}\nDescrição: ${formData.description}`
+      `Olá Kial,\n\nInteresse no plano ${plan}.\n\n--- DADOS ---\nEmpresa: ${formData.companyName}\nWhatsApp: ${formData.prefix} ${formData.whatsapp}\nDescrição: ${formData.description}`
     );
     window.location.href = `mailto:kialungajs@gmail.com?subject=${subject}&body=${body}`;
   };
@@ -944,7 +945,15 @@ function ProposalGenerator() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">WhatsApp</label>
-                      <input name="whatsapp" value={formData.whatsapp} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
+                      <div className="flex gap-2">
+                        <select name="prefix" value={formData.prefix} onChange={handleInputChange} className="w-24 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none font-sans text-xs">
+                          <option value="+244" className="bg-[#0a0a0a]">🇦🇴 +244</option>
+                          <option value="+351" className="bg-[#0a0a0a]">🇵🇹 +351</option>
+                          <option value="+55" className="bg-[#0a0a0a]">🇧🇷 +55</option>
+                          <option value="+1" className="bg-[#0a0a0a]">🇺🇸 +1</option>
+                        </select>
+                        <input name="whatsapp" value={formData.whatsapp} onChange={handleInputChange} placeholder="Número" className="flex-1 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Serviço</label>
@@ -976,40 +985,51 @@ function ProposalGenerator() {
                 ) : (
                   <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
                     <div className="text-center space-y-4">
-                      <h3 className="text-4xl font-display font-medium text-[#d4ff3f]">Planos Sugeridos</h3>
-                      <p className="text-white/50">Experimente o modo Premium por 7 dias grátis para avaliar meu trabalho.</p>
-                      <div className="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-bold text-white/40 pt-4">
-                        <span>Angola: +244 947 109 187</span>
-                        <span>Portugal: +351 XXX XXX XXX</span>
-                        <span>Brasil: +55 XX XXXX-XXXX</span>
-                      </div>
+                      <h3 className="text-4xl font-display font-medium text-[#d4ff3f]">Planos Estratégicos</h3>
+                      <p className="text-white/50">Planos flexíveis com pagamento via Cartão ou PayPal.</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {getPlans().map((plan, i) => (
                         <div key={i} className={cn(
-                          "p-8 rounded-3xl border flex flex-col gap-6",
-                          plan.promo ? "bg-[#d4ff3f] text-black border-[#d4ff3f] md:scale-105" : "bg-white/5 border-white/10 text-white"
+                          "p-8 rounded-3xl border flex flex-col gap-6 relative overflow-hidden",
+                          plan.promo ? "border-[#d4ff3f] bg-white/5" : "border-white/10 bg-white/5"
                         )}>
+                          {plan.promo && (
+                            <div className="absolute top-0 right-0 bg-[#d4ff3f] text-black px-4 py-1 text-[10px] font-bold uppercase tracking-tighter rounded-bl-xl">
+                              {plan.promoText}
+                            </div>
+                          )}
                           <div className="space-y-2">
-                            <span className="text-[10px] uppercase tracking-widest font-bold opacity-60">{plan.name}</span>
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] uppercase tracking-widest font-bold text-white/40">{plan.name}</span>
+                              <span className="text-[10px] font-bold text-[#d4ff3f]">{plan.time}</span>
+                            </div>
                             <h4 className="text-3xl font-display font-medium">{plan.price}</h4>
                           </div>
                           <ul className="space-y-3 flex-1">
                             {plan.features.map((f, j) => (
-                              <li key={j} className="text-sm flex items-center gap-2">
-                                <span className={cn("w-1.5 h-1.5 rounded-full", plan.promo ? "bg-black" : "bg-[#d4ff3f]")} />
+                              <li key={j} className="text-sm flex items-center gap-2 text-white/80">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#d4ff3f]" />
                                 {f}
                               </li>
                             ))}
                           </ul>
+                          
+                          {plan.trial && (
+                            <div className="bg-[#d4ff3f] text-black p-4 rounded-2xl mb-2 text-center">
+                              <p className="text-xs font-bold uppercase tracking-tighter">🎁 Modo Premium Grátis</p>
+                              <p className="text-[10px] font-medium leading-tight">Experimente por 7 dias para avaliar.</p>
+                            </div>
+                          )}
+
                           <div className="flex gap-2">
-                            <button onClick={() => sendToEmail(plan.name)} className={cn("flex-1 py-4 rounded-xl flex items-center justify-center transition-colors", plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-white/10 text-white hover:bg-white/20")} title="Email">
+                            <button onClick={() => sendToEmail(plan.name)} className={cn("flex-1 py-4 rounded-xl flex items-center justify-center transition-colors", plan.trial ? "bg-[#d4ff3f] text-black" : "bg-white/10 text-white hover:bg-[#d4ff3f] hover:text-black")} title="Email">
                               <Mail className="w-5 h-5" />
                             </button>
-                            <a href="https://wa.me/244947109187" target="_blank" className={cn("flex-1 py-4 rounded-xl flex items-center justify-center transition-colors", plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-[#25D366] text-white hover:opacity-80")} title="WhatsApp">
+                            <a href="https://wa.me/244947109187" target="_blank" className="flex-1 py-4 rounded-xl flex items-center justify-center bg-[#25D366] text-white hover:opacity-80" title="WhatsApp">
                               <MessageCircle className="w-5 h-5" />
                             </a>
-                            <a href="https://t.me/kialunga" target="_blank" className={cn("flex-1 py-4 rounded-xl flex items-center justify-center transition-colors", plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-[#0088cc] text-white hover:opacity-80")} title="Telegram">
+                            <a href="https://t.me/kialunga" target="_blank" className="flex-1 py-4 rounded-xl flex items-center justify-center bg-[#0088cc] text-white hover:opacity-80" title="Telegram">
                               <Send className="w-5 h-5" />
                             </a>
                           </div>
