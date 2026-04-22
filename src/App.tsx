@@ -212,7 +212,9 @@ function Nav() {
               </a>
             </Magnetic>
             <Magnetic>
-              <a href="mailto:kialungajs@gmail.com" className="hover:opacity-60 transition-opacity">{t('nav.email')}</a>
+              <a href="mailto:kialungajs@gmail.com" className="hover:opacity-60 transition-opacity flex items-center justify-center">
+                <Mail className="w-5 h-5" />
+              </a>
             </Magnetic>
           </div>
           <div className="flex items-center gap-2 ml-4">
@@ -742,13 +744,20 @@ function Footer() {
         <div className="grid md:grid-cols-12 gap-12 mb-32">
           <div className="md:col-span-4">
             <p className="font-sans text-sm font-medium text-white/40 uppercase tracking-widest mb-8">{t('footer.connect')}</p>
-            <div className="flex flex-col gap-2 font-sans text-lg">
+            <div className="flex flex-col gap-6 font-sans text-lg">
               <Magnetic className="self-start">
-                <a href="mailto:kialungajs@gmail.com" className="hover:opacity-60 transition-opacity">kialungajs@gmail.com</a>
+                <a href="mailto:kialungajs@gmail.com" className="hover:opacity-60 transition-opacity flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-[#d4ff3f]" /> kialungajs@gmail.com
+                </a>
               </Magnetic>
               <Magnetic className="self-start">
-                <a href="https://wa.me/244947109187" target="_blank" rel="noreferrer" className="hover:opacity-60 transition-opacity flex items-center gap-2">
-                  <MessageCircle className="w-5 h-5" /> WhatsApp
+                <a href="https://wa.me/244947109187" target="_blank" rel="noreferrer" className="hover:opacity-60 transition-opacity flex items-center gap-3">
+                  <MessageCircle className="w-5 h-5 text-[#25D366]" /> WhatsApp
+                </a>
+              </Magnetic>
+              <Magnetic className="self-start">
+                <a href="https://t.me/kialunga" target="_blank" rel="noreferrer" className="hover:opacity-60 transition-opacity flex items-center gap-3">
+                  <Send className="w-5 h-5 text-[#0088cc]" /> Telegram
                 </a>
               </Magnetic>
             </div>
@@ -832,7 +841,7 @@ function WatermarkCover() {
 
 function ProposalGenerator() {
   const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState(1); // 1: Data, 2: Result
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     companyName: '',
     employees: '',
@@ -851,26 +860,26 @@ function ProposalGenerator() {
   const getPlans = () => {
     const s = formData.serviceType;
     if (s === 'Website') return [
-      { name: 'Básico', price: '50.000 Kz', features: ['3 Páginas', 'SEO Base', 'Suporte'] },
-      { name: 'Ótimo', price: '120.000 Kz', features: ['10 Páginas', 'Design Custom', 'Blog'] },
-      { name: 'Premium', price: '250.000 Kz', features: ['Ilimitado', 'E-commerce', 'Experiência 7 Dias Grátis'], promo: true }
+      { name: 'Básico', price: '$150', features: ['3 Páginas', 'SEO Base', 'Suporte'] },
+      { name: 'Ótimo', price: '$450', features: ['10 Páginas', 'Design Custom', 'Blog'] },
+      { name: 'Premium', price: '$900', features: ['Ilimitado', 'E-commerce', 'Experiência 7 Dias Grátis'], promo: true }
     ];
     if (s === 'Landing Page') return [
-      { name: 'Básico', price: '35.000 Kz', features: ['Sessão Única', 'Mobile Ready'] },
-      { name: 'Ótimo', price: '75.000 Kz', features: ['Copywriting', 'Animações High'] },
-      { name: 'Premium', price: '150.000 Kz', features: ['A/B Testing', 'Experiência 7 Dias Grátis'], promo: true }
+      { name: 'Básico', price: '$100', features: ['Sessão Única', 'Mobile Ready'] },
+      { name: 'Ótimo', price: '$250', features: ['Copywriting', 'Animações High'] },
+      { name: 'Premium', price: '$500', features: ['A/B Testing', 'Experiência 7 Dias Grátis'], promo: true }
     ];
     return [
-      { name: 'Básico', price: '40.000 Kz', features: ['Consultoria'] },
-      { name: 'Ótimo', price: '90.000 Kz', features: ['Manutenção'] },
-      { name: 'Premium', price: '180.000 Kz', features: ['Full Service', 'Experiência 7 Dias Grátis'], promo: true }
+      { name: 'Básico', price: '$120', features: ['Consultoria'] },
+      { name: 'Ótimo', price: '$300', features: ['Manutenção'] },
+      { name: 'Premium', price: '$600', features: ['Full Service', 'Experiência 7 Dias Grátis'], promo: true }
     ];
   };
 
   const sendToEmail = (plan: string) => {
-    const subject = encodeURIComponent(`Nova Proposta: ${plan} - ${formData.companyName}`);
+    const subject = encodeURIComponent(`Nova Solicitação: ${plan} - ${formData.companyName}`);
     const body = encodeURIComponent(
-      `Olá Kial,\n\nTenho interesse no plano ${plan} para o serviço ${formData.serviceType}.\n\nEmpresa: ${formData.companyName}\nWhatsApp: ${formData.whatsapp}`
+      `Olá Kial,\n\nTenho interesse no plano ${plan}.\n\n--- DADOS ---\nEmpresa: ${formData.companyName}\nWhatsApp: ${formData.whatsapp}\nDescrição: ${formData.description}`
     );
     window.location.href = `mailto:kialungajs@gmail.com?subject=${subject}&body=${body}`;
   };
@@ -883,7 +892,7 @@ function ProposalGenerator() {
             onClick={() => setIsOpen(true)}
             className="bg-[#d4ff3f] text-black p-4 md:p-6 rounded-full shadow-2xl flex items-center gap-3 hover:scale-110 transition-transform group"
           >
-            <span className="font-sans text-xs font-bold uppercase tracking-widest">
+            <span className="font-sans text-xs font-bold uppercase tracking-widest hidden md:block">
               {language === 'pt' ? 'Solicitar Proposta' : 'Get Proposal'}
             </span>
             <ArrowUpRight className="w-6 h-6" />
@@ -906,45 +915,53 @@ function ProposalGenerator() {
             >
               <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
                 <h2 className="font-display text-xl font-medium tracking-tight">
-                  {step === 1 ? (language === 'pt' ? 'Dados do Projeto' : 'Project Data') : (language === 'pt' ? 'Escolha o Plano' : 'Choose Plan')}
+                  {step === 1 ? 'Dados da Proposta' : 'Escolha seu Plano'}
                 </h2>
                 <button onClick={() => {setIsOpen(false); setStep(1);}} className="text-white/40 hover:text-white transition-colors uppercase text-xs tracking-widest font-bold">
-                  {language === 'pt' ? '[ Fechar ]' : '[ Close ]'}
+                  [ {language === 'pt' ? 'Fechar' : 'Close'} ]
                 </button>
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 md:p-10">
                 {step === 1 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Nome da Empresa' : 'Company Name'}</label>
-                      <input name="companyName" value={formData.companyName} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none" />
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Nome da Empresa</label>
+                      <input name="companyName" value={formData.companyName} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Equipe' : 'Team Size'}</label>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Equipe</label>
                       <select name="employees" value={formData.employees} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none">
-                        <option value="" className="bg-[#0a0a0a] text-white">Selecione...</option>
-                        <option value="0" className="bg-[#0a0a0a] text-white">Individual (1 pessoa)</option>
-                        <option value="5" className="bg-[#0a0a0a] text-white">1 - 5 Pessoas</option>
-                        <option value="10" className="bg-[#0a0a0a] text-white">5 - 10+ Pessoas</option>
+                        <option value="" className="bg-[#0a0a0a]">Selecione...</option>
+                        <option value="0">Individual (1 pessoa)</option>
+                        <option value="5">1 - 5 Pessoas</option>
+                        <option value="10">5 - 10+ Pessoas</option>
                       </select>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Email</label>
-                      <input name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none" />
+                      <input name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">WhatsApp</label>
-                      <input name="whatsapp" value={formData.whatsapp} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none" />
+                      <input name="whatsapp" value={formData.whatsapp} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Serviço</label>
+                      <select name="serviceType" value={formData.serviceType} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none">
+                        <option value="" className="bg-[#0a0a0a]">Selecione...</option>
+                        <option value="Website">Website Profissional</option>
+                        <option value="Landing Page">Landing Page</option>
+                        <option value="E-commerce">Loja Virtual</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Rede Social</label>
+                      <input name="social" value={formData.social} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
                     </div>
                     <div className="md:col-span-2 space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Serviço' : 'Service'}</label>
-                      <select name="serviceType" value={formData.serviceType} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none">
-                        <option value="" className="bg-[#0a0a0a] text-white">Selecione...</option>
-                        <option value="Website" className="bg-[#0a0a0a] text-white">Website Profissional</option>
-                        <option value="Landing Page" className="bg-[#0a0a0a] text-white">Landing Page</option>
-                        <option value="E-commerce" className="bg-[#0a0a0a] text-white">Loja Virtual</option>
-                      </select>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Descrição do Projeto</label>
+                      <textarea name="description" value={formData.description} onChange={handleInputChange} className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none resize-none focus:border-[#d4ff3f]/50" placeholder="Fale-nos sobre a sua ideia..." />
                     </div>
                     <div className="md:col-span-2 pt-10">
                       <button 
@@ -952,27 +969,25 @@ function ProposalGenerator() {
                         disabled={!formData.companyName || !formData.serviceType}
                         className="w-full bg-[#d4ff3f] text-black py-6 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-all disabled:opacity-30 flex items-center justify-center gap-2 relative z-[300] cursor-pointer"
                       >
-                        {language === 'pt' ? 'Ver Proposta e Planos' : 'See Proposal & Plans'} <ArrowUpRight className="w-5 h-5" />
+                        Ver Proposta <ArrowUpRight className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
                     <div className="text-center space-y-4">
-                      <h3 className="text-4xl font-display font-medium text-[#d4ff3f] uppercase tracking-tighter">Planos Sugeridos</h3>
-                      <p className="text-white/50">{language === 'pt' ? 'Escolha o plano ideal. No modo Premium, você tem 7 dias para testar meu trabalho antes de pagar.' : 'Choose the ideal plan. In Premium mode, you have 7 days to test my work before paying.'}</p>
-                      
-                      {/* Regional Contacts */}
-                      <div className="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-bold text-white/40 pt-4 pb-2">
-                        <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#d4ff3f]" /> Angola: +244 947 109 187</span>
-                        <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-blue-500" /> Portugal: +351 XXX XXX XXX</span>
-                        <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-yellow-500" /> Brasil: +55 XX XXXX-XXXX</span>
+                      <h3 className="text-4xl font-display font-medium text-[#d4ff3f]">Planos Sugeridos</h3>
+                      <p className="text-white/50">Experimente o modo Premium por 7 dias grátis para avaliar meu trabalho.</p>
+                      <div className="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-bold text-white/40 pt-4">
+                        <span>Angola: +244 947 109 187</span>
+                        <span>Portugal: +351 XXX XXX XXX</span>
+                        <span>Brasil: +55 XX XXXX-XXXX</span>
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {getPlans().map((plan, i) => (
                         <div key={i} className={cn(
-                          "p-8 rounded-3xl border flex flex-col gap-6 transition-all duration-500",
+                          "p-8 rounded-3xl border flex flex-col gap-6",
                           plan.promo ? "bg-[#d4ff3f] text-black border-[#d4ff3f] md:scale-105" : "bg-white/5 border-white/10 text-white"
                         )}>
                           <div className="space-y-2">
@@ -988,38 +1003,13 @@ function ProposalGenerator() {
                             ))}
                           </ul>
                           <div className="flex gap-2">
-                            <button 
-                              onClick={() => sendToEmail(plan.name)}
-                              className={cn(
-                                "flex-1 py-4 rounded-xl flex items-center justify-center transition-colors",
-                                plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-white/10 text-white hover:bg-white/20"
-                              )}
-                              title="Email"
-                            >
+                            <button onClick={() => sendToEmail(plan.name)} className={cn("flex-1 py-4 rounded-xl flex items-center justify-center transition-colors", plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-white/10 text-white hover:bg-white/20")} title="Email">
                               <Mail className="w-5 h-5" />
                             </button>
-                            <a 
-                              href="https://wa.me/244947109187" 
-                              target="_blank" 
-                              rel="noreferrer"
-                              className={cn(
-                                "flex-1 py-4 rounded-xl flex items-center justify-center transition-colors",
-                                plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-[#25D366] text-white hover:opacity-80"
-                              )}
-                              title="WhatsApp"
-                            >
+                            <a href="https://wa.me/244947109187" target="_blank" className={cn("flex-1 py-4 rounded-xl flex items-center justify-center transition-colors", plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-[#25D366] text-white hover:opacity-80")} title="WhatsApp">
                               <MessageCircle className="w-5 h-5" />
                             </a>
-                            <a 
-                              href="https://t.me/kialunga" 
-                              target="_blank" 
-                              rel="noreferrer"
-                              className={cn(
-                                "flex-1 py-4 rounded-xl flex items-center justify-center transition-colors",
-                                plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-[#0088cc] text-white hover:opacity-80"
-                              )}
-                              title="Telegram"
-                            >
+                            <a href="https://t.me/kialunga" target="_blank" className={cn("flex-1 py-4 rounded-xl flex items-center justify-center transition-colors", plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-[#0088cc] text-white hover:opacity-80")} title="Telegram">
                               <Send className="w-5 h-5" />
                             </a>
                           </div>
