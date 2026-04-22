@@ -830,10 +830,9 @@ function WatermarkCover() {
   );
 }
 
-function AIProposalGenerator() {
+function ProposalGenerator() {
   const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState(1); // 1: Data, 2: AI Interaction, 3: Result
-  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1); // 1: Data, 2: Result
   const [formData, setFormData] = useState({
     companyName: '',
     employees: '',
@@ -843,83 +842,35 @@ function AIProposalGenerator() {
     serviceType: '',
     description: ''
   });
-  const [proposal, setProposal] = useState('');
   const { language } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const generateProposal = async () => {
-    setLoading(true);
-    try {
-      // Save data to server (Shell/Grelha)
-      await fetch('/api/proposals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      }).catch(err => console.error("Error saving to server:", err));
-
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
-      const prompt = language === 'pt' 
-        ? `Você é o assistente comercial sênior do "Kial Dev".
-           DADOS DO CLIENTE:
-           - Empresa: ${formData.companyName}
-           - Tamanho: ${formData.employees === '0' ? 'Individual' : formData.employees + ' funcionários'}
-           - Serviço: ${formData.serviceType}
-           - Descrição: ${formData.description}
-           
-           TAREFA:
-           Crie uma PROPOSTA comercial estratégica.
-           REGRAS OBRIGATÓRIAS:
-           1. Proponha uma faixa de PREÇO estimada (em Kwanza ou Dólar).
-           2. Destaque OBRIGATORIAMENTE os "7 DIAS DE TESTE GRÁTIS".
-           3. Use um tom profissional e persuasivo.
-           4. Formate com Markdown elegante.`
-        : `You are the Senior Sales Assistant for "Kial Dev".
-           CLIENT DATA:
-           - Company: ${formData.companyName}
-           - Size: ${formData.employees === '0' ? 'Individual' : formData.employees + ' employees'}
-           - Service: ${formData.serviceType}
-           - Description: ${formData.description}
-           
-           TASK:
-           Create a strategic BUSINESS PROPOSAL.
-           MANDATORY RULES:
-           1. Propose an estimated PRICE range.
-           2. MANDATORILY highlight the "7-DAY FREE TRIAL".
-           3. Use a professional and persuasive tone.
-           4. Format with elegant Markdown.`;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      setProposal(response.text());
-      setStep(3);
-    } catch (error) {
-      console.error(error);
-      setProposal(language === 'pt' ? "Erro ao gerar proposta. Verifique sua chave API." : "Error generating proposal. Check your API key.");
-      setStep(3);
-    }
-    setLoading(false);
+  const getPlans = () => {
+    const s = formData.serviceType;
+    if (s === 'Website') return [
+      { name: 'Básico', price: '50.000 Kz', features: ['3 Páginas', 'SEO Base', 'Suporte'] },
+      { name: 'Ótimo', price: '120.000 Kz', features: ['10 Páginas', 'Design Custom', 'Blog'] },
+      { name: 'Premium', price: '250.000 Kz', features: ['Ilimitado', 'E-commerce', 'Experiência 7 Dias Grátis'], promo: true }
+    ];
+    if (s === 'Landing Page') return [
+      { name: 'Básico', price: '35.000 Kz', features: ['Sessão Única', 'Mobile Ready'] },
+      { name: 'Ótimo', price: '75.000 Kz', features: ['Copywriting', 'Animações High'] },
+      { name: 'Premium', price: '150.000 Kz', features: ['A/B Testing', 'Experiência 7 Dias Grátis'], promo: true }
+    ];
+    return [
+      { name: 'Básico', price: '40.000 Kz', features: ['Consultoria'] },
+      { name: 'Ótimo', price: '90.000 Kz', features: ['Manutenção'] },
+      { name: 'Premium', price: '180.000 Kz', features: ['Full Service', 'Experiência 7 Dias Grátis'], promo: true }
+    ];
   };
 
-  const sendToEmail = () => {
-    const subject = encodeURIComponent(`Nova Proposta Comercial - ${formData.companyName}`);
+  const sendToEmail = (plan: string) => {
+    const subject = encodeURIComponent(`Nova Proposta: ${plan} - ${formData.companyName}`);
     const body = encodeURIComponent(
-      `Olá Kial,\n\n` +
-      `Gostaria de solicitar um orçamento com base na proposta gerada pela IA:\n\n` +
-      `--- DADOS DA EMPRESA ---\n` +
-      `Empresa: ${formData.companyName}\n` +
-      `Funcionários: ${formData.employees}\n` +
-      `WhatsApp: ${formData.whatsapp}\n` +
-      `Rede Social: ${formData.social}\n` +
-      `Serviço: ${formData.serviceType}\n\n` +
-      `--- PROPOSTA GERADA ---\n` +
-      `${proposal}\n\n` +
-      `--- FIM DA PROPOSTA ---`
+      `Olá Kial,\n\nTenho interesse no plano ${plan} para o serviço ${formData.serviceType}.\n\nEmpresa: ${formData.companyName}\nWhatsApp: ${formData.whatsapp}`
     );
     window.location.href = `mailto:kialungajs@gmail.com?subject=${subject}&body=${body}`;
   };
@@ -932,8 +883,8 @@ function AIProposalGenerator() {
             onClick={() => setIsOpen(true)}
             className="bg-[#d4ff3f] text-black p-4 md:p-6 rounded-full shadow-2xl flex items-center gap-3 hover:scale-110 transition-transform group"
           >
-            <span className="font-sans text-xs font-bold uppercase tracking-widest hidden md:block">
-              {language === 'pt' ? 'Solicitar Proposta IA' : 'AI Proposal Request'}
+            <span className="font-sans text-xs font-bold uppercase tracking-widest">
+              {language === 'pt' ? 'Solicitar Proposta' : 'Get Proposal'}
             </span>
             <ArrowUpRight className="w-6 h-6" />
           </button>
@@ -951,140 +902,95 @@ function AIProposalGenerator() {
             <motion.div 
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              className="bg-[#0a0a0a] border border-white/10 w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col cursor-auto"
+              className="bg-[#0a0a0a] border border-white/10 w-full max-w-5xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col cursor-auto shadow-2xl"
             >
-              {/* Header */}
               <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
-                <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-[#d4ff3f] flex items-center justify-center text-black font-bold text-xs">
-                    {step}
-                  </div>
-                  <h2 className="font-display text-xl font-medium tracking-tight">
-                    {step === 1 && (language === 'pt' ? 'Dados para Proposta' : 'Proposal Data')}
-                    {step === 2 && (language === 'pt' ? 'Interação com IA' : 'AI Interaction')}
-                    {step === 3 && (language === 'pt' ? 'Sua Proposta Exclusiva' : 'Your Exclusive Proposal')}
-                  </h2>
-                </div>
-                <button onClick={() => {setIsOpen(false); setStep(1); setProposal('');}} className="text-white/40 hover:text-white transition-colors uppercase text-xs tracking-widest font-bold">
+                <h2 className="font-display text-xl font-medium tracking-tight">
+                  {step === 1 ? (language === 'pt' ? 'Dados do Projeto' : 'Project Data') : (language === 'pt' ? 'Escolha o Plano' : 'Choose Plan')}
+                </h2>
+                <button onClick={() => {setIsOpen(false); setStep(1);}} className="text-white/40 hover:text-white transition-colors uppercase text-xs tracking-widest font-bold">
                   {language === 'pt' ? '[ Fechar ]' : '[ Close ]'}
                 </button>
               </div>
 
-              {/* Content */}
               <div className="flex-1 overflow-y-auto p-6 md:p-10">
-                {step === 1 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {step === 1 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Nome da Empresa' : 'Company Name'}</label>
                       <input name="companyName" value={formData.companyName} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Tamanho da Equipe' : 'Team Size'}</label>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Equipe' : 'Team Size'}</label>
                       <select name="employees" value={formData.employees} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none">
-                        <option value="">{language === 'pt' ? 'Selecione...' : 'Select...'}</option>
-                        <option value="0">{language === 'pt' ? 'Individual (1 pessoa)' : 'Individual (1 person)'}</option>
-                        <option value="5">1 - 5</option>
-                        <option value="10">5 - 10</option>
-                        <option value="50">10 - 50</option>
-                        <option value="100">+50</option>
+                        <option value="">Selecione...</option>
+                        <option value="0">Individual</option>
+                        <option value="5">1-5 Pessoas</option>
+                        <option value="10">5-10+ Pessoas</option>
                       </select>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Email</label>
-                      <input name="email" type="email" value={formData.email} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none" />
+                      <input name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">WhatsApp</label>
                       <input name="whatsapp" value={formData.whatsapp} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none" />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Rede Social' : 'Social Media'}</label>
-                      <input name="social" value={formData.social} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none" />
-                    </div>
-                    <div className="space-y-2">
+                    <div className="md:col-span-2 space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Tipo de Serviço' : 'Service Type'}</label>
                       <select name="serviceType" value={formData.serviceType} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none">
-                        <option value="">{language === 'pt' ? 'Selecione...' : 'Select...'}</option>
-                        <option value="Website">Website</option>
-                        <option value="Web App">Web App</option>
-                        <option value="Landing Page">Landing Page</option>
-                        <option value="E-commerce">E-commerce</option>
+                        <option value="">Selecione...</option>
+                        <option value="Website">Website Profissional</option>
+                        <option value="Landing Page">Landing Page de Alta Conversão</option>
+                        <option value="E-commerce">Loja Virtual</option>
                       </select>
                     </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Descrição do Projeto' : 'Project Description'}</label>
-                      <textarea name="description" value={formData.description} onChange={handleInputChange} className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none resize-none" />
-                    </div>
-                    <button 
-                      onClick={() => setStep(2)}
-                      disabled={!formData.companyName || !formData.email}
-                      className="md:col-span-2 bg-[#d4ff3f] text-black py-5 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-30"
-                    >
-                      {language === 'pt' ? 'Avançar para IA' : 'Proceed to AI'}
-                    </button>
-                  </div>
-                )}
-
-                {step === 2 && (
-                  <div className="text-center space-y-8 py-10">
-                    <div className="w-20 h-20 bg-[#d4ff3f]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <MessageCircle className="w-10 h-10 text-[#d4ff3f]" />
-                    </div>
-                    <h3 className="text-3xl font-display font-medium">
-                      {language === 'pt' ? 'Deseja interagir com nossa IA?' : 'Want to interact with our AI?'}
-                    </h3>
-                    <p className="text-white/60 max-w-md mx-auto">
-                      {language === 'pt' 
-                        ? 'Você pode tirar dúvidas agora ou clicar em avançar para gerar sua proposta completa com preços e o teste de 7 dias.'
-                        : 'You can ask questions now or click proceed to generate your full proposal with prices and the 7-day trial.'}
-                    </p>
-                    <div className="flex flex-col gap-4 max-w-md mx-auto">
+                    <div className="md:col-span-2 pt-6">
                       <button 
-                        onClick={generateProposal}
-                        className="bg-[#d4ff3f] text-black py-5 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-colors"
+                        onClick={() => setStep(2)}
+                        disabled={!formData.companyName || !formData.serviceType}
+                        className="w-full bg-[#d4ff3f] text-black py-5 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-30 relative z-50 block"
                       >
-                        {loading ? <div className="w-6 h-6 border-2 border-black/20 border-t-black rounded-full animate-spin mx-auto" /> : (language === 'pt' ? 'Gerar Proposta Final' : 'Generate Final Proposal')}
+                        {language === 'pt' ? 'Ver Proposta e Planos' : 'See Proposal & Plans'}
                       </button>
                     </div>
                   </div>
-                )}
-
-                {step === 3 && (
-                  <div className="space-y-8">
-                    <div className="bg-[#d4ff3f]/5 border border-[#d4ff3f]/20 p-6 rounded-2xl flex items-center gap-4 mb-8">
-                      <div className="bg-[#d4ff3f] text-black p-2 rounded-lg font-bold text-xs uppercase tracking-tighter">7 Dias</div>
-                      <p className="text-sm font-medium text-[#d4ff3f]">
-                        {language === 'pt' 
-                          ? 'Lembre-se: Você tem 7 dias de teste grátis para validar o produto!' 
-                          : 'Remember: You have a 7-day free trial to validate the product!'}
-                      </p>
+                ) : (
+                  <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="text-center space-y-4">
+                      <h3 className="text-4xl font-display font-medium text-[#d4ff3f] uppercase tracking-tighter">Planos Sugeridos</h3>
+                      <p className="text-white/50">{language === 'pt' ? 'Escolha o plano ideal. No modo Premium, você tem 7 dias para testar meu trabalho antes de pagar.' : 'Choose the ideal plan. In Premium mode, you have 7 days to test my work before paying.'}</p>
                     </div>
-                    <div className="prose prose-invert max-w-none bg-white/5 p-8 rounded-3xl border border-white/10">
-                      <div className="whitespace-pre-wrap font-sans text-lg leading-relaxed text-white/90">
-                        {proposal}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <button 
-                        onClick={sendToEmail}
-                        className="bg-white text-black py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-xs hover:bg-[#d4ff3f] transition-colors"
-                      >
-                        {language === 'pt' ? 'Enviar p/ Email' : 'Send to Email'}
-                      </button>
-                      <a 
-                        href={`https://wa.me/244947109187?text=${encodeURIComponent(`Olá Kial! Acabei de gerar uma proposta para a ${formData.companyName}.`)}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="bg-[#25D366] text-white py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-xs text-center hover:opacity-80 transition-opacity"
-                      >
-                        WhatsApp
-                      </a>
-                      <button 
-                        onClick={() => {setStep(1); setProposal('');}}
-                        className="border border-white/10 py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-xs hover:bg-white/5 transition-colors"
-                      >
-                        {language === 'pt' ? 'Nova Consulta' : 'New Inquiry'}
-                      </button>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {getPlans().map((plan, i) => (
+                        <div key={i} className={cn(
+                          "p-8 rounded-3xl border flex flex-col gap-6 transition-all duration-500",
+                          plan.promo ? "bg-[#d4ff3f] text-black border-[#d4ff3f] md:scale-105" : "bg-white/5 border-white/10 text-white"
+                        )}>
+                          <div className="space-y-2">
+                            <span className="text-[10px] uppercase tracking-widest font-bold opacity-60">{plan.name}</span>
+                            <h4 className="text-3xl font-display font-medium">{plan.price}</h4>
+                          </div>
+                          <ul className="space-y-3 flex-1">
+                            {plan.features.map((f, j) => (
+                              <li key={j} className="text-sm flex items-center gap-2">
+                                <span className={cn("w-1.5 h-1.5 rounded-full", plan.promo ? "bg-black" : "bg-[#d4ff3f]")} />
+                                {f}
+                              </li>
+                            ))}
+                          </ul>
+                          <button 
+                            onClick={() => sendToEmail(plan.name)}
+                            className={cn(
+                              "w-full py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-[10px] transition-colors",
+                              plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-[#d4ff3f] text-black hover:bg-white"
+                            )}
+                          >
+                            {plan.promo ? (language === 'pt' ? 'Iniciar 7 Dias Grátis' : 'Start 7-Day Free Trial') : (language === 'pt' ? 'Escolher Plano' : 'Select Plan')}
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -1139,7 +1045,7 @@ export default function App() {
           <SplineBackground />
           <WatermarkCover />
           <CustomCursor />
-          <AIProposalGenerator />
+          <ProposalGenerator />
           {!isLoading && (
             <BrowserRouter>
               <ScrollToTop />
