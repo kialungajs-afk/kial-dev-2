@@ -862,25 +862,25 @@ function ProposalGenerator() {
     const s = formData.serviceType;
     if (s === 'Website') return [
       { name: 'Básico', price: '$150', time: '1 Mês', features: ['5 Páginas (Inc. +2)', 'SEO Base', 'Suporte', 'Cartão / PayPal'] },
-      { name: 'Ótimo', price: '$450', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', '10 Páginas', 'Design Custom', 'Blog', 'Economize $150'], promo: true, promoText: '4 Meses Total' },
-      { name: 'Premium', price: '$900', time: 'Anual', features: ['Ilimitado', 'E-commerce', 'Gestão Total', 'Cartão / PayPal'], trial: true }
+      { name: 'Ótimo', price: '$450', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', '10 Páginas', 'Design Custom', 'Economize $150', 'Cartão / PayPal'], promo: true, bonus: true },
+      { name: 'Premium', price: '$900', time: '6 Meses + 1 GRÁTIS', features: ['Ilimitado', 'E-commerce', 'Gestão Total', 'Economize $150', 'Cartão / PayPal'], trial: true, bonus: true }
     ];
     if (s === 'Landing Page') return [
       { name: 'Básico', price: '$100', time: '1 Mês', features: ['5 Páginas (Inc. +2)', 'Mobile Ready', 'Cartão / PayPal'] },
-      { name: 'Ótimo', price: '$300', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', 'Copywriting', 'Animações High', 'Economize $100'], promo: true, promoText: '4 Meses Total' },
-      { name: 'Premium', price: '$600', time: 'Anual', features: ['A/B Testing', 'Gestão Ads', 'Cartão / PayPal'], trial: true }
+      { name: 'Ótimo', price: '$300', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', 'Copywriting', 'Animações High', 'Economize $100', 'Cartão / PayPal'], promo: true, bonus: true },
+      { name: 'Premium', price: '$600', time: '6 Meses + 1 GRÁTIS', features: ['A/B Testing', 'Gestão Ads', 'Full Service', 'Economize $100', 'Cartão / PayPal'], trial: true, bonus: true }
     ];
     return [
-      { name: 'Básico', price: '$120', time: '1 Mês', features: ['Consultoria', 'Suporte', 'Cartão / PayPal'] },
-      { name: 'Ótimo', price: '$360', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', 'Manutenção', 'Otimização', 'Economize $120'], promo: true, promoText: '4 Meses Total' },
-      { name: 'Premium', price: '$720', time: 'Anual', features: ['Full Service', 'Prioridade', 'Cartão / PayPal'], trial: true }
+      { name: 'Básico', price: '$120', time: '1 Mês', features: ['5 Páginas', 'Consultoria', 'Cartão / PayPal'] },
+      { name: 'Ótimo', price: '$360', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', 'Manutenção', 'Otimização', 'Economize $120', 'Cartão / PayPal'], promo: true, bonus: true },
+      { name: 'Premium', price: '$720', time: '6 Meses + 1 GRÁTIS', features: ['Full Service', 'Prioridade', 'Gestão Total', 'Economize $120', 'Cartão / PayPal'], trial: true, bonus: true }
     ];
   };
 
   const sendToEmail = (plan: string) => {
-    const subject = encodeURIComponent(`Nova Proposta: ${plan} - ${formData.companyName}`);
+    const subject = encodeURIComponent(`Nova Solicitação: ${plan} - ${formData.companyName}`);
     const body = encodeURIComponent(
-      `Olá Kial,\n\nInteresse no plano ${plan}.\n\n--- DADOS ---\nEmpresa: ${formData.companyName}\nWhatsApp: ${formData.prefix} ${formData.whatsapp}\nDescrição: ${formData.description}`
+      `Olá Kial,\n\nTenho interesse no plano ${plan}.\n\n--- DADOS ---\nEmpresa: ${formData.companyName}\nWhatsApp: ${formData.prefix} ${formData.whatsapp}\nDescrição: ${formData.description}`
     );
     window.location.href = `mailto:kialungajs@gmail.com?subject=${subject}&body=${body}`;
   };
@@ -986,7 +986,12 @@ function ProposalGenerator() {
                   <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
                     <div className="text-center space-y-4">
                       <h3 className="text-4xl font-display font-medium text-[#d4ff3f]">Planos Estratégicos</h3>
-                      <p className="text-white/50">Planos flexíveis com pagamento via Cartão ou PayPal.</p>
+                      <p className="text-white/50">Todos os planos de 3 meses ou mais garantem 1 mês extra gratuito.</p>
+                      <div className="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-bold text-white/40 pt-4">
+                        <span>Angola: +244 947 109 187</span>
+                        <span>Portugal: +351 XXX XXX XXX</span>
+                        <span>Brasil: +55 XX XXXX-XXXX</span>
+                      </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {getPlans().map((plan, i) => (
@@ -994,9 +999,9 @@ function ProposalGenerator() {
                           "p-8 rounded-3xl border flex flex-col gap-6 relative overflow-hidden",
                           plan.promo ? "border-[#d4ff3f] bg-white/5" : "border-white/10 bg-white/5"
                         )}>
-                          {plan.promo && (
-                            <div className="absolute top-0 right-0 bg-[#d4ff3f] text-black px-4 py-1 text-[10px] font-bold uppercase tracking-tighter rounded-bl-xl">
-                              {plan.promoText}
+                          {plan.bonus && (
+                            <div className="absolute top-0 right-0 bg-[#d4ff3f] text-black px-4 py-1 text-[10px] font-bold uppercase tracking-tighter rounded-bl-xl animate-pulse">
+                              🎁 +1 MÊS GRÁTIS
                             </div>
                           )}
                           <div className="space-y-2">
@@ -1016,9 +1021,9 @@ function ProposalGenerator() {
                           </ul>
                           
                           {plan.trial && (
-                            <div className="bg-[#d4ff3f] text-black p-4 rounded-2xl mb-2 text-center">
-                              <p className="text-xs font-bold uppercase tracking-tighter">🎁 Modo Premium Grátis</p>
-                              <p className="text-[10px] font-medium leading-tight">Experimente por 7 dias para avaliar.</p>
+                            <div className="bg-[#d4ff3f] text-black p-5 rounded-2xl mb-2 text-center border-2 border-white/20 shadow-xl">
+                              <p className="text-xs font-bold uppercase tracking-tighter">🎁 EXPERIÊNCIA PREMIUM</p>
+                              <p className="text-[10px] font-medium leading-tight">Avalie meu trabalho por 7 dias grátis antes de pagar.</p>
                             </div>
                           )}
 
@@ -1026,10 +1031,10 @@ function ProposalGenerator() {
                             <button onClick={() => sendToEmail(plan.name)} className={cn("flex-1 py-4 rounded-xl flex items-center justify-center transition-colors", plan.trial ? "bg-[#d4ff3f] text-black" : "bg-white/10 text-white hover:bg-[#d4ff3f] hover:text-black")} title="Email">
                               <Mail className="w-5 h-5" />
                             </button>
-                            <a href="https://wa.me/244947109187" target="_blank" className="flex-1 py-4 rounded-xl flex items-center justify-center bg-[#25D366] text-white hover:opacity-80" title="WhatsApp">
+                            <a href="https://wa.me/244947109187" target="_blank" rel="noreferrer" className="flex-1 py-4 rounded-xl flex items-center justify-center bg-[#25D366] text-white hover:opacity-80" title="WhatsApp">
                               <MessageCircle className="w-5 h-5" />
                             </a>
-                            <a href="https://t.me/kialunga" target="_blank" className="flex-1 py-4 rounded-xl flex items-center justify-center bg-[#0088cc] text-white hover:opacity-80" title="Telegram">
+                            <a href="https://t.me/kialunga" target="_blank" rel="noreferrer" className="flex-1 py-4 rounded-xl flex items-center justify-center bg-[#0088cc] text-white hover:opacity-80" title="Telegram">
                               <Send className="w-5 h-5" />
                             </a>
                           </div>
