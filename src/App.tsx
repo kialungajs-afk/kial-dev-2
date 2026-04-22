@@ -862,17 +862,17 @@ function ProposalGenerator() {
     const s = formData.serviceType;
     if (s === 'Website') return [
       { name: 'Básico', price: '$150', time: '1 Mês', features: ['5 Páginas (Inc. +2)', 'SEO Base', 'Suporte', 'Cartão / PayPal'] },
-      { name: 'Ótimo', price: '$450', time: '3 Meses + 1 GRÁTIS', features: ['10 Páginas', 'Design Custom', 'Blog', 'Cartão / PayPal'], promo: true, promoText: '4 Meses Total' },
+      { name: 'Ótimo', price: '$450', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', '10 Páginas', 'Design Custom', 'Blog', 'Economize $150'], promo: true, promoText: '4 Meses Total' },
       { name: 'Premium', price: '$900', time: 'Anual', features: ['Ilimitado', 'E-commerce', 'Gestão Total', 'Cartão / PayPal'], trial: true }
     ];
     if (s === 'Landing Page') return [
       { name: 'Básico', price: '$100', time: '1 Mês', features: ['5 Páginas (Inc. +2)', 'Mobile Ready', 'Cartão / PayPal'] },
-      { name: 'Ótimo', price: '$300', time: '3 Meses + 1 GRÁTIS', features: ['Copywriting', 'Animações High', 'Cartão / PayPal'], promo: true, promoText: '4 Meses Total' },
+      { name: 'Ótimo', price: '$300', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', 'Copywriting', 'Animações High', 'Economize $100'], promo: true, promoText: '4 Meses Total' },
       { name: 'Premium', price: '$600', time: 'Anual', features: ['A/B Testing', 'Gestão Ads', 'Cartão / PayPal'], trial: true }
     ];
     return [
       { name: 'Básico', price: '$120', time: '1 Mês', features: ['Consultoria', 'Suporte', 'Cartão / PayPal'] },
-      { name: 'Ótimo', price: '$360', time: '3 Meses + 1 GRÁTIS', features: ['Manutenção', 'Otimização', 'Cartão / PayPal'], promo: true, promoText: '4 Meses Total' },
+      { name: 'Ótimo', price: '$360', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', 'Manutenção', 'Otimização', 'Economize $120'], promo: true, promoText: '4 Meses Total' },
       { name: 'Premium', price: '$720', time: 'Anual', features: ['Full Service', 'Prioridade', 'Cartão / PayPal'], trial: true }
     ];
   };
@@ -944,7 +944,7 @@ function ProposalGenerator() {
                       <input name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">WhatsApp</label>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">WhatsApp / Telegram</label>
                       <div className="flex gap-2">
                         <select name="prefix" value={formData.prefix} onChange={handleInputChange} className="w-24 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none font-sans text-xs">
                           <option value="+244" className="bg-[#0a0a0a]">🇦🇴 +244</option>
