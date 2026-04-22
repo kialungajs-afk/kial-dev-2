@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from 'motion/react';
-import { ArrowUpRight, Menu, MessageCircle } from 'lucide-react';
+import { ArrowUpRight, Menu, MessageCircle, Mail, Send } from 'lucide-react';
 import React, { useEffect, useState, useRef, createContext, useContext, ReactNode } from 'react';
 import Lenis from 'lenis';
 import { clsx, type ClassValue } from 'clsx';
@@ -922,37 +922,37 @@ function ProposalGenerator() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Equipe' : 'Team Size'}</label>
-                      <select name="employees" value={formData.employees} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none">
-                        <option value="">Selecione...</option>
-                        <option value="0">Individual</option>
-                        <option value="5">1-5 Pessoas</option>
-                        <option value="10">5-10+ Pessoas</option>
+                      <select name="employees" value={formData.employees} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none">
+                        <option value="" className="bg-[#0a0a0a] text-white">Selecione...</option>
+                        <option value="0" className="bg-[#0a0a0a] text-white">Individual (1 pessoa)</option>
+                        <option value="5" className="bg-[#0a0a0a] text-white">1 - 5 Pessoas</option>
+                        <option value="10" className="bg-[#0a0a0a] text-white">5 - 10+ Pessoas</option>
                       </select>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Email</label>
-                      <input name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none" />
+                      <input name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">WhatsApp</label>
-                      <input name="whatsapp" value={formData.whatsapp} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none" />
+                      <input name="whatsapp" value={formData.whatsapp} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none" />
                     </div>
                     <div className="md:col-span-2 space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Tipo de Serviço' : 'Service Type'}</label>
-                      <select name="serviceType" value={formData.serviceType} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#d4ff3f]/50 outline-none">
-                        <option value="">Selecione...</option>
-                        <option value="Website">Website Profissional</option>
-                        <option value="Landing Page">Landing Page de Alta Conversão</option>
-                        <option value="E-commerce">Loja Virtual</option>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{language === 'pt' ? 'Serviço' : 'Service'}</label>
+                      <select name="serviceType" value={formData.serviceType} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none">
+                        <option value="" className="bg-[#0a0a0a] text-white">Selecione...</option>
+                        <option value="Website" className="bg-[#0a0a0a] text-white">Website Profissional</option>
+                        <option value="Landing Page" className="bg-[#0a0a0a] text-white">Landing Page</option>
+                        <option value="E-commerce" className="bg-[#0a0a0a] text-white">Loja Virtual</option>
                       </select>
                     </div>
-                    <div className="md:col-span-2 pt-6">
+                    <div className="md:col-span-2 pt-10">
                       <button 
                         onClick={() => setStep(2)}
                         disabled={!formData.companyName || !formData.serviceType}
-                        className="w-full bg-[#d4ff3f] text-black py-5 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-30 relative z-50 block"
+                        className="w-full bg-[#d4ff3f] text-black py-6 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-all disabled:opacity-30 flex items-center justify-center gap-2 relative z-[300] cursor-pointer"
                       >
-                        {language === 'pt' ? 'Ver Proposta e Planos' : 'See Proposal & Plans'}
+                        {language === 'pt' ? 'Ver Proposta e Planos' : 'See Proposal & Plans'} <ArrowUpRight className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
@@ -961,8 +961,15 @@ function ProposalGenerator() {
                     <div className="text-center space-y-4">
                       <h3 className="text-4xl font-display font-medium text-[#d4ff3f] uppercase tracking-tighter">Planos Sugeridos</h3>
                       <p className="text-white/50">{language === 'pt' ? 'Escolha o plano ideal. No modo Premium, você tem 7 dias para testar meu trabalho antes de pagar.' : 'Choose the ideal plan. In Premium mode, you have 7 days to test my work before paying.'}</p>
+                      
+                      {/* Regional Contacts */}
+                      <div className="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-bold text-white/40 pt-4 pb-2">
+                        <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#d4ff3f]" /> Angola: +244 947 109 187</span>
+                        <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-blue-500" /> Portugal: +351 XXX XXX XXX</span>
+                        <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-yellow-500" /> Brasil: +55 XX XXXX-XXXX</span>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-10">
                       {getPlans().map((plan, i) => (
                         <div key={i} className={cn(
                           "p-8 rounded-3xl border flex flex-col gap-6 transition-all duration-500",
@@ -980,15 +987,42 @@ function ProposalGenerator() {
                               </li>
                             ))}
                           </ul>
-                          <button 
-                            onClick={() => sendToEmail(plan.name)}
-                            className={cn(
-                              "w-full py-4 rounded-xl font-sans font-bold uppercase tracking-widest text-[10px] transition-colors",
-                              plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-[#d4ff3f] text-black hover:bg-white"
-                            )}
-                          >
-                            {plan.promo ? (language === 'pt' ? 'Iniciar 7 Dias Grátis' : 'Start 7-Day Free Trial') : (language === 'pt' ? 'Escolher Plano' : 'Select Plan')}
-                          </button>
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={() => sendToEmail(plan.name)}
+                              className={cn(
+                                "flex-1 py-4 rounded-xl flex items-center justify-center transition-colors",
+                                plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-white/10 text-white hover:bg-white/20"
+                              )}
+                              title="Email"
+                            >
+                              <Mail className="w-5 h-5" />
+                            </button>
+                            <a 
+                              href="https://wa.me/244947109187" 
+                              target="_blank" 
+                              rel="noreferrer"
+                              className={cn(
+                                "flex-1 py-4 rounded-xl flex items-center justify-center transition-colors",
+                                plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-[#25D366] text-white hover:opacity-80"
+                              )}
+                              title="WhatsApp"
+                            >
+                              <MessageCircle className="w-5 h-5" />
+                            </a>
+                            <a 
+                              href="https://t.me/kialunga" 
+                              target="_blank" 
+                              rel="noreferrer"
+                              className={cn(
+                                "flex-1 py-4 rounded-xl flex items-center justify-center transition-colors",
+                                plan.promo ? "bg-black text-white hover:bg-black/80" : "bg-[#0088cc] text-white hover:opacity-80"
+                              )}
+                              title="Telegram"
+                            >
+                              <Send className="w-5 h-5" />
+                            </a>
+                          </div>
                         </div>
                       ))}
                     </div>
