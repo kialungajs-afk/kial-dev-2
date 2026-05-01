@@ -746,18 +746,18 @@ function Footer() {
             <p className="font-sans text-sm font-medium text-white/40 uppercase tracking-widest mb-8">{t('footer.connect')}</p>
             <div className="flex flex-col gap-6 font-sans text-lg">
               <Magnetic className="self-start">
-                <a href="mailto:kialungajs@gmail.com" className="hover:opacity-60 transition-opacity flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-[#d4ff3f]" /> kialungajs@gmail.com
+                <a href="mailto:kialungajs@gmail.com" className="hover:opacity-60 transition-opacity flex items-center gap-3" aria-label={t('footer.email')}>
+                  <Mail className="w-5 h-5 text-[#d4ff3f]" />
                 </a>
               </Magnetic>
               <Magnetic className="self-start">
                 <a href="https://wa.me/244947109187" target="_blank" rel="noreferrer" className="hover:opacity-60 transition-opacity flex items-center gap-3">
-                  <MessageCircle className="w-5 h-5 text-[#25D366]" /> WhatsApp
+                  <MessageCircle className="w-5 h-5 text-[#25D366]" /> {t('footer.whatsapp')}
                 </a>
               </Magnetic>
               <Magnetic className="self-start">
                 <a href="https://t.me/kialunga" target="_blank" rel="noreferrer" className="hover:opacity-60 transition-opacity flex items-center gap-3">
-                  <Send className="w-5 h-5 text-[#0088cc]" /> Telegram
+                  <Send className="w-5 h-5 text-[#0088cc]" /> {t('footer.telegram')}
                 </a>
               </Magnetic>
             </div>
@@ -842,6 +842,7 @@ function WatermarkCover() {
 function ProposalGenerator() {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     companyName: '',
     employees: '',
@@ -852,7 +853,7 @@ function ProposalGenerator() {
     serviceType: '',
     description: ''
   });
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -860,29 +861,70 @@ function ProposalGenerator() {
 
   const getPlans = () => {
     const s = formData.serviceType;
-    if (s === 'Website') return [
-      { name: 'Básico', price: '$150', time: '1 Mês', features: ['5 Páginas (Inc. +2)', 'SEO Base', 'Suporte', 'Cartão / PayPal'] },
-      { name: 'Ótimo', price: '$450', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', '10 Páginas', 'Design Custom', 'Economize $150', 'Cartão / PayPal'], promo: true, bonus: true },
-      { name: 'Premium', price: '$900', time: '6 Meses + 1 GRÁTIS', features: ['Ilimitado', 'E-commerce', 'Gestão Total', 'Economize $150', 'Cartão / PayPal'], trial: true, bonus: true }
-    ];
-    if (s === 'Landing Page') return [
-      { name: 'Básico', price: '$100', time: '1 Mês', features: ['5 Páginas (Inc. +2)', 'Mobile Ready', 'Cartão / PayPal'] },
-      { name: 'Ótimo', price: '$300', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', 'Copywriting', 'Animações High', 'Economize $100', 'Cartão / PayPal'], promo: true, bonus: true },
-      { name: 'Premium', price: '$600', time: '6 Meses + 1 GRÁTIS', features: ['A/B Testing', 'Gestão Ads', 'Full Service', 'Economize $100', 'Cartão / PayPal'], trial: true, bonus: true }
-    ];
+    const isEnglish = language === 'en';
+    
+    // Default features based on service
+    const webFeatures = isEnglish 
+      ? ['5 Pages (Inc. +2)', 'SEO Base', 'Support', 'Card / PayPal']
+      : ['5 Páginas (Inc. +2)', 'SEO Base', 'Suporte', 'Cartão / PayPal'];
+    const optimalWebFeatures = isEnglish
+      ? ['Pay 3, Get 4 Months', '10 Pages', 'Custom Design', 'Save $110', 'Card / PayPal']
+      : ['Pague 3, Receba 4 Meses', '10 Páginas', 'Design Custom', 'Economize $110', 'Cartão / PayPal'];
+    const premiumWebFeatures = isEnglish
+      ? ['Unlimited', 'E-commerce', 'Full Management', 'Save $220', 'Card / PayPal']
+      : ['Ilimitado', 'E-commerce', 'Gestão Total', 'Economize $220', 'Cartão / PayPal'];
+
     return [
-      { name: 'Básico', price: '$120', time: '1 Mês', features: ['5 Páginas', 'Consultoria', 'Cartão / PayPal'] },
-      { name: 'Ótimo', price: '$360', time: '3 Meses + 1 GRÁTIS', features: ['Pague 3, Receba 4 Meses', 'Manutenção', 'Otimização', 'Economize $120', 'Cartão / PayPal'], promo: true, bonus: true },
-      { name: 'Premium', price: '$720', time: '6 Meses + 1 GRÁTIS', features: ['Full Service', 'Prioridade', 'Gestão Total', 'Economize $120', 'Cartão / PayPal'], trial: true, bonus: true }
+      { 
+        name: t('proposal.plans.basic'), 
+        price: '$60', 
+        time: isEnglish ? '1 Month' : '1 Mês', 
+        features: webFeatures 
+      },
+      { 
+        name: t('proposal.plans.optimal'), 
+        price: '$250', 
+        time: isEnglish ? '3 Months + 1 FREE' : '3 Meses + 1 GRÁTIS', 
+        features: optimalWebFeatures, 
+        promo: true, 
+        bonus: true 
+      },
+      { 
+        name: t('proposal.plans.premium'), 
+        price: '$500', 
+        time: isEnglish ? '6 Months + 1 FREE' : '6 Meses + 1 GRÁTIS', 
+        features: premiumWebFeatures, 
+        trial: true, 
+        bonus: true 
+      }
     ];
   };
 
-  const sendToEmail = (plan: string) => {
-    const subject = encodeURIComponent(`Nova Solicitação: ${plan} - ${formData.companyName}`);
-    const body = encodeURIComponent(
-      `Olá Kial,\n\nTenho interesse no plano ${plan}.\n\n--- DADOS ---\nEmpresa: ${formData.companyName}\nWhatsApp: ${formData.prefix} ${formData.whatsapp}\nDescrição: ${formData.description}`
-    );
-    window.location.href = `mailto:kialungajs@gmail.com?subject=${subject}&body=${body}`;
+  const handleSubmit = async (plan: string) => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('https://formspree.io/f/xvgopkzw', { // Replace with actual ID
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          selectedPlan: plan,
+          _subject: `Nova Proposta: ${plan} - ${formData.companyName}`
+        })
+      });
+
+      if (response.ok) {
+        alert(language === 'pt' ? 'Proposta enviada com sucesso!' : 'Proposal sent successfully!');
+        setIsOpen(false);
+        setStep(1);
+      } else {
+        throw new Error();
+      }
+    } catch (error) {
+      alert(language === 'pt' ? 'Erro ao enviar. Tente novamente ou use o WhatsApp.' : 'Error sending. Try again or use WhatsApp.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -894,7 +936,7 @@ function ProposalGenerator() {
             className="bg-[#d4ff3f] text-black p-4 md:p-6 rounded-full shadow-2xl flex items-center gap-3 hover:scale-110 transition-transform group"
           >
             <span className="font-sans text-xs font-bold uppercase tracking-widest hidden md:block">
-              {language === 'pt' ? 'Solicitar Proposta' : 'Get Proposal'}
+              {t('proposal.btn.get')}
             </span>
             <ArrowUpRight className="w-6 h-6" />
           </button>
@@ -916,35 +958,35 @@ function ProposalGenerator() {
             >
               <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
                 <h2 className="font-display text-xl font-medium tracking-tight">
-                  {step === 1 ? 'Dados da Proposta' : 'Escolha seu Plano'}
+                  {step === 1 ? t('proposal.step1.title') : t('proposal.step2.title')}
                 </h2>
                 <button onClick={() => {setIsOpen(false); setStep(1);}} className="text-white/40 hover:text-white transition-colors uppercase text-xs tracking-widest font-bold">
-                  [ {language === 'pt' ? 'Fechar' : 'Close'} ]
+                  [ {t('proposal.btn.close')} ]
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6 md:p-10">
+              <div className="flex-1 overflow-y-auto p-6 md:p-10 scrollbar-hide">
                 {step === 1 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-24">
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Nome da Empresa</label>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.company')}</label>
                       <input name="companyName" value={formData.companyName} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Equipe</label>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.employees')}</label>
                       <select name="employees" value={formData.employees} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none">
-                        <option value="" className="bg-[#0a0a0a]">Selecione...</option>
-                        <option value="0">Individual (1 pessoa)</option>
-                        <option value="5">1 - 5 Pessoas</option>
-                        <option value="10">5 - 10+ Pessoas</option>
+                        <option value="" className="bg-[#0a0a0a]">{t('proposal.form.employees.placeholder')}</option>
+                        <option value="0">{t('proposal.form.employees.individual')}</option>
+                        <option value="5">{t('proposal.form.employees.small')}</option>
+                        <option value="10">{t('proposal.form.employees.large')}</option>
                       </select>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Email</label>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.email')}</label>
                       <input name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">WhatsApp / Telegram</label>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.whatsapp')}</label>
                       <div className="flex gap-2">
                         <select name="prefix" value={formData.prefix} onChange={handleInputChange} className="w-24 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none font-sans text-xs">
                           <option value="+244" className="bg-[#0a0a0a]">🇦🇴 +244</option>
@@ -952,41 +994,41 @@ function ProposalGenerator() {
                           <option value="+55" className="bg-[#0a0a0a]">🇧🇷 +55</option>
                           <option value="+1" className="bg-[#0a0a0a]">🇺🇸 +1</option>
                         </select>
-                        <input name="whatsapp" value={formData.whatsapp} onChange={handleInputChange} placeholder="Número" className="flex-1 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
+                        <input name="whatsapp" value={formData.whatsapp} onChange={handleInputChange} placeholder={t('proposal.form.phone.placeholder')} className="flex-1 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Serviço</label>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.service')}</label>
                       <select name="serviceType" value={formData.serviceType} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none">
-                        <option value="" className="bg-[#0a0a0a]">Selecione...</option>
-                        <option value="Website">Website Profissional</option>
-                        <option value="Landing Page">Landing Page</option>
-                        <option value="E-commerce">Loja Virtual</option>
+                        <option value="" className="bg-[#0a0a0a]">{t('proposal.form.service.placeholder')}</option>
+                        <option value="Website">{t('proposal.form.service.web')}</option>
+                        <option value="Landing Page">{t('proposal.form.service.lp')}</option>
+                        <option value="E-commerce">{t('proposal.form.service.shop')}</option>
                       </select>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Rede Social</label>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.social')}</label>
                       <input name="social" value={formData.social} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
                     </div>
                     <div className="md:col-span-2 space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Descrição do Projeto</label>
-                      <textarea name="description" value={formData.description} onChange={handleInputChange} className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none resize-none focus:border-[#d4ff3f]/50" placeholder="Fale-nos sobre a sua ideia..." />
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.description')}</label>
+                      <textarea name="description" value={formData.description} onChange={handleInputChange} className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none resize-none focus:border-[#d4ff3f]/50" placeholder={t('proposal.form.description.placeholder')} />
                     </div>
-                    <div className="md:col-span-2 pt-10">
+                    <div className="md:col-span-2 pt-10 sticky bottom-0 bg-[#0a0a0a] py-6 z-[300]">
                       <button 
                         onClick={() => setStep(2)}
                         disabled={!formData.companyName || !formData.serviceType}
-                        className="w-full bg-[#d4ff3f] text-black py-6 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-all disabled:opacity-30 flex items-center justify-center gap-2 relative z-[300] cursor-pointer"
+                        className="w-full bg-[#d4ff3f] text-black py-6 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-all disabled:opacity-30 flex items-center justify-center gap-2 cursor-pointer shadow-2xl border-4 border-black"
                       >
-                        Ver Proposta <ArrowUpRight className="w-5 h-5" />
+                        {t('proposal.btn.see')} <ArrowUpRight className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
                     <div className="text-center space-y-4">
-                      <h3 className="text-4xl font-display font-medium text-[#d4ff3f]">Planos Estratégicos</h3>
-                      <p className="text-white/50">Todos os planos de 3 meses ou mais garantem 1 mês extra gratuito.</p>
+                      <h3 className="text-4xl font-display font-medium text-[#d4ff3f]">{t('proposal.plans.title')}</h3>
+                      <p className="text-white/50">{t('proposal.plans.subtitle')}</p>
                       <div className="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-bold text-white/40 pt-4">
                         <span>Angola: +244 947 109 187</span>
                         <span>Portugal: +351 XXX XXX XXX</span>
@@ -1001,7 +1043,7 @@ function ProposalGenerator() {
                         )}>
                           {plan.bonus && (
                             <div className="absolute top-0 right-0 bg-[#d4ff3f] text-black px-4 py-1 text-[10px] font-bold uppercase tracking-tighter rounded-bl-xl animate-pulse">
-                              🎁 +1 MÊS GRÁTIS
+                              {t('proposal.plans.bonus')}
                             </div>
                           )}
                           <div className="space-y-2">
@@ -1022,22 +1064,22 @@ function ProposalGenerator() {
                           
                           {plan.trial && (
                             <div className="bg-[#d4ff3f] text-black p-5 rounded-2xl mb-2 text-center border-2 border-white/20 shadow-xl">
-                              <p className="text-xs font-bold uppercase tracking-tighter">🎁 EXPERIÊNCIA PREMIUM</p>
-                              <p className="text-[10px] font-medium leading-tight">Avalie meu trabalho por 7 dias grátis antes de pagar.</p>
+                              <p className="text-xs font-bold uppercase tracking-tighter">{t('proposal.plans.trial.title')}</p>
+                              <p className="text-[10px] font-medium leading-tight">{t('proposal.plans.trial.desc')}</p>
                             </div>
                           )}
 
-                          <div className="flex gap-2">
-                            <button onClick={() => sendToEmail(plan.name)} className={cn("flex-1 py-4 rounded-xl flex items-center justify-center transition-colors", plan.trial ? "bg-[#d4ff3f] text-black" : "bg-white/10 text-white hover:bg-[#d4ff3f] hover:text-black")} title="Email">
-                              <Mail className="w-5 h-5" />
-                            </button>
-                            <a href="https://wa.me/244947109187" target="_blank" rel="noreferrer" className="flex-1 py-4 rounded-xl flex items-center justify-center bg-[#25D366] text-white hover:opacity-80" title="WhatsApp">
-                              <MessageCircle className="w-5 h-5" />
-                            </a>
-                            <a href="https://t.me/kialunga" target="_blank" rel="noreferrer" className="flex-1 py-4 rounded-xl flex items-center justify-center bg-[#0088cc] text-white hover:opacity-80" title="Telegram">
-                              <Send className="w-5 h-5" />
-                            </a>
-                          </div>
+                          <button 
+                            onClick={() => handleSubmit(plan.name)} 
+                            disabled={isSubmitting}
+                            className={cn(
+                              "w-full py-5 rounded-xl font-sans font-bold uppercase tracking-widest transition-all",
+                              plan.trial ? "bg-[#d4ff3f] text-black hover:bg-white" : "bg-white/10 text-white hover:bg-[#d4ff3f] hover:text-black",
+                              isSubmitting && "opacity-50 cursor-not-allowed"
+                            )}
+                          >
+                            {isSubmitting ? '...' : t('proposal.btn.submit')}
+                          </button>
                         </div>
                       ))}
                     </div>
