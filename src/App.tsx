@@ -929,19 +929,21 @@ function ProposalGenerator() {
 
   return (
     <>
-      <div className="fixed bottom-8 right-8 z-[120]">
-        <Magnetic>
-          <button 
-            onClick={() => setIsOpen(true)}
-            className="bg-[#d4ff3f] text-black p-4 md:p-6 rounded-full shadow-2xl flex items-center gap-3 hover:scale-110 transition-transform group"
-          >
-            <span className="font-sans text-xs font-bold uppercase tracking-widest hidden md:block">
-              {t('proposal.btn.get')}
-            </span>
-            <ArrowUpRight className="w-6 h-6" />
-          </button>
-        </Magnetic>
-      </div>
+      {!isOpen && (
+        <div className="fixed bottom-8 right-8 z-[120]">
+          <Magnetic>
+            <button 
+              onClick={() => setIsOpen(true)}
+              className="bg-[#d4ff3f] text-black p-4 md:p-6 rounded-full shadow-2xl flex items-center gap-3 hover:scale-110 transition-transform group"
+            >
+              <span className="font-sans text-xs font-bold uppercase tracking-widest hidden md:block">
+                {t('proposal.btn.get')}
+              </span>
+              <ArrowUpRight className="w-6 h-6" />
+            </button>
+          </Magnetic>
+        </div>
+      )}
 
       <AnimatePresence>
         {isOpen && (
@@ -954,9 +956,10 @@ function ProposalGenerator() {
             <motion.div 
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              className="bg-[#0a0a0a] border border-white/10 w-full max-w-5xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col cursor-auto shadow-2xl"
+              className="bg-[#0a0a0a] border border-white/10 w-full max-w-5xl h-[90vh] md:h-[80vh] rounded-3xl overflow-hidden flex flex-col cursor-auto shadow-2xl"
             >
-              <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
+              {/* HEADER FIXO */}
+              <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/40 shrink-0">
                 <h2 className="font-display text-xl font-medium tracking-tight">
                   {step === 1 ? t('proposal.step1.title') : t('proposal.step2.title')}
                 </h2>
@@ -965,20 +968,21 @@ function ProposalGenerator() {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6 md:p-10 scrollbar-hide">
+              {/* CORPO ROLÁVEL */}
+              <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
                 {step === 1 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-24">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.company')}</label>
                       <input name="companyName" value={formData.companyName} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.employees')}</label>
-                      <select name="employees" value={formData.employees} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none">
-                        <option value="" className="bg-[#0a0a0a]">{t('proposal.form.employees.placeholder')}</option>
-                        <option value="0">{t('proposal.form.employees.individual')}</option>
-                        <option value="5">{t('proposal.form.employees.small')}</option>
-                        <option value="10">{t('proposal.form.employees.large')}</option>
+                      <select name="employees" value={formData.employees} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none cursor-pointer">
+                        <option value="" className="bg-black text-white">{t('proposal.form.employees.placeholder')}</option>
+                        <option value="0" className="bg-black text-white">{t('proposal.form.employees.individual')}</option>
+                        <option value="5" className="bg-black text-white">{t('proposal.form.employees.small')}</option>
+                        <option value="10" className="bg-black text-white">{t('proposal.form.employees.large')}</option>
                       </select>
                     </div>
                     <div className="space-y-2">
@@ -988,22 +992,22 @@ function ProposalGenerator() {
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.whatsapp')}</label>
                       <div className="flex gap-2">
-                        <select name="prefix" value={formData.prefix} onChange={handleInputChange} className="w-24 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none font-sans text-xs">
-                          <option value="+244" className="bg-[#0a0a0a]">🇦🇴 +244</option>
-                          <option value="+351" className="bg-[#0a0a0a]">🇵🇹 +351</option>
-                          <option value="+55" className="bg-[#0a0a0a]">🇧🇷 +55</option>
-                          <option value="+1" className="bg-[#0a0a0a]">🇺🇸 +1</option>
+                        <select name="prefix" value={formData.prefix} onChange={handleInputChange} className="w-24 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none font-sans text-xs cursor-pointer">
+                          <option value="+244" className="bg-black text-white">🇦🇴 +244</option>
+                          <option value="+351" className="bg-black text-white">🇵🇹 +351</option>
+                          <option value="+55" className="bg-black text-white">🇧🇷 +55</option>
+                          <option value="+1" className="bg-black text-white">🇺🇸 +1</option>
                         </select>
                         <input name="whatsapp" value={formData.whatsapp} onChange={handleInputChange} placeholder={t('proposal.form.phone.placeholder')} className="flex-1 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-[#d4ff3f]/50" />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.service')}</label>
-                      <select name="serviceType" value={formData.serviceType} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none">
-                        <option value="" className="bg-[#0a0a0a]">{t('proposal.form.service.placeholder')}</option>
-                        <option value="Website">{t('proposal.form.service.web')}</option>
-                        <option value="Landing Page">{t('proposal.form.service.lp')}</option>
-                        <option value="E-commerce">{t('proposal.form.service.shop')}</option>
+                      <select name="serviceType" value={formData.serviceType} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none appearance-none cursor-pointer">
+                        <option value="" className="bg-black text-white">{t('proposal.form.service.placeholder')}</option>
+                        <option value="Website" className="bg-black text-white">{t('proposal.form.service.web')}</option>
+                        <option value="Landing Page" className="bg-black text-white">{t('proposal.form.service.lp')}</option>
+                        <option value="E-commerce" className="bg-black text-white">{t('proposal.form.service.shop')}</option>
                       </select>
                     </div>
                     <div className="space-y-2">
@@ -1012,20 +1016,85 @@ function ProposalGenerator() {
                     </div>
                     <div className="md:col-span-2 space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{t('proposal.form.description')}</label>
-                      <textarea name="description" value={formData.description} onChange={handleInputChange} className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none resize-none focus:border-[#d4ff3f]/50" placeholder={t('proposal.form.description.placeholder')} />
-                    </div>
-                    <div className="md:col-span-2 pt-10 sticky bottom-0 bg-[#0a0a0a] py-6 z-[300]">
-                      <button 
-                        onClick={() => setStep(2)}
-                        disabled={!formData.companyName || !formData.serviceType}
-                        className="w-full bg-[#d4ff3f] text-black py-6 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-all disabled:opacity-30 flex items-center justify-center gap-2 cursor-pointer shadow-2xl border-4 border-black"
-                      >
-                        {t('proposal.btn.see')} <ArrowUpRight className="w-5 h-5" />
-                      </button>
+                      <textarea name="description" value={formData.description} onChange={handleInputChange} className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-4 text-white outline-none resize-none focus:border-[#d4ff3f]/50" placeholder={t('proposal.form.description.placeholder')} />
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+                  <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
+                    <div className="text-center space-y-4">
+                      <h3 className="text-4xl font-display font-medium text-[#d4ff3f]">{t('proposal.plans.title')}</h3>
+                      <p className="text-white/50">{t('proposal.plans.subtitle')}</p>
+                      <div className="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-bold text-white/40 pt-4">
+                        <span>Angola: +244 947 109 187</span>
+                        <span>Portugal: +351 XXX XXX XXX</span>
+                        <span>Brasil: +55 XX XXXX-XXXX</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {getPlans().map((plan, i) => (
+                        <div key={i} className={cn(
+                          "p-8 rounded-3xl border flex flex-col gap-6 relative overflow-hidden",
+                          plan.promo ? "border-[#d4ff3f] bg-white/5" : "border-white/10 bg-white/5"
+                        )}>
+                          {plan.bonus && (
+                            <div className="absolute top-0 right-0 bg-[#d4ff3f] text-black px-4 py-1 text-[10px] font-bold uppercase tracking-tighter rounded-bl-xl animate-pulse">
+                              {t('proposal.plans.bonus')}
+                            </div>
+                          )}
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] uppercase tracking-widest font-bold text-white/40">{plan.name}</span>
+                              <span className="text-[10px] font-bold text-[#d4ff3f]">{plan.time}</span>
+                            </div>
+                            <h4 className="text-3xl font-display font-medium">{plan.price}</h4>
+                          </div>
+                          <ul className="space-y-3 flex-1">
+                            {plan.features.map((f, j) => (
+                              <li key={j} className="text-sm flex items-center gap-2 text-white/80">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#d4ff3f]" />
+                                {f}
+                              </li>
+                            ))}
+                          </ul>
+                          
+                          {plan.trial && (
+                            <div className="bg-[#d4ff3f] text-black p-5 rounded-2xl mb-2 text-center border-2 border-white/20 shadow-xl">
+                              <p className="text-xs font-bold uppercase tracking-tighter">{t('proposal.plans.trial.title')}</p>
+                              <p className="text-[10px] font-medium leading-tight">{t('proposal.plans.trial.desc')}</p>
+                            </div>
+                          )}
+
+                          <button 
+                            onClick={() => handleSubmit(plan.name)} 
+                            disabled={isSubmitting}
+                            className={cn(
+                              "w-full py-5 rounded-xl font-sans font-bold uppercase tracking-widest transition-all",
+                              plan.trial ? "bg-[#d4ff3f] text-black hover:bg-white" : "bg-white/10 text-white hover:bg-[#d4ff3f] hover:text-black",
+                              isSubmitting && "opacity-50 cursor-not-allowed"
+                            )}
+                          >
+                            {isSubmitting ? '...' : t('proposal.btn.submit')}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* RODAPÉ FIXO (Somente para o Step 1) */}
+              {step === 1 && (
+                <div className="p-6 border-t border-white/10 bg-black/40 shrink-0">
+                  <button 
+                    onClick={() => setStep(2)}
+                    disabled={!formData.companyName || !formData.serviceType}
+                    className="w-full bg-[#d4ff3f] text-black py-5 rounded-2xl font-sans font-bold uppercase tracking-widest hover:bg-white transition-all disabled:opacity-30 flex items-center justify-center gap-2 shadow-xl"
+                  >
+                    {t('proposal.btn.see')} <ArrowUpRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+            </motion.div>
                     <div className="text-center space-y-4">
                       <h3 className="text-4xl font-display font-medium text-[#d4ff3f]">{t('proposal.plans.title')}</h3>
                       <p className="text-white/50">{t('proposal.plans.subtitle')}</p>
